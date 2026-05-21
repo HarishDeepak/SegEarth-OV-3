@@ -1,0 +1,16 @@
+ftfy
+regex
+huggingface_hub
+iopath
+fvcore
+omegaconf
+hydra-core
+einops
+timm
+transformers
+safetensors
+opencv-python
+Pillow
+matplotlib
+tifffile
+pycocotools
