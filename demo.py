@@ -1,7 +1,8 @@
 from PIL import Image
 
-import matplotlib
-matplotlib.use("Agg")
+import os
+# force non-notebook backend
+os.environ["MPLBACKEND"] = "Agg"
 
 import matplotlib.pyplot as plt
 from torchvision import transforms
