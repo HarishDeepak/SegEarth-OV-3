@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 from mmseg.structures import SegDataSample
 from segearthov3_segmentor import SegEarthOV3Segmentation
+from config_local import *
 
-img_path = 'resources/oem_koeln_50.tif'
+img_path = IMAGE_PATH
 
-name_list = ['background', 'bareland,barren', 'grass', 'road', 'car',
-             'tree,forest', 'water,river', 'cropland', 'building,roof,house']
+name_list = ['Impervious surfaces', 'Building', 'Low vegetation', 'Tree', 'Car', 'Clutter/background']
 
 with open('./configs/my_name.txt', 'w') as writers:
     for i in range(len(name_list)):

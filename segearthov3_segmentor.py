@@ -10,7 +10,9 @@ from PIL import Image
 from sam3 import build_sam3_image_model
 from sam3.model.sam3_image_processor import Sam3Processor
 
+from config_local import *
 
+checkpoint_path = 
 @MODELS.register_module()
 class SegEarthOV3Segmentation(BaseSegmentor):
     def __init__(self, classname_path,
@@ -30,7 +32,7 @@ class SegEarthOV3Segmentation(BaseSegmentor):
         # Initialize SAM3 model
         model = build_sam3_image_model(
             bpe_path="./sam3/assets/bpe_simple_vocab_16e6.txt.gz", 
-            checkpoint_path='weights/sam3/sam3.pt', 
+            checkpoint_path=checkpoint_path=SAM3_CHECKPOINT,
             device="cuda"
         )
         self.processor = Sam3Processor(model, confidence_threshold=confidence_threshold, device=device)
