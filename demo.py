@@ -30,7 +30,7 @@ image_paths = []
 
 for ext in IMAGE_EXTENSIONS:
     image_paths.extend(
-        Path(IMAGE_FOLDER).glob(f"*{ext}")
+        Path(INPUT_FOLDER).glob(f"*{ext}")
     )
 
 image_paths = sorted(image_paths)
