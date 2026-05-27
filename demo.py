@@ -5,6 +5,9 @@ import os
 
 # force non-notebook backend
 os.environ["MPLBACKEND"] = "Agg"
+import time
+import torch
+import subprocess
 
 import matplotlib.pyplot as plt
 from torchvision import transforms
@@ -29,14 +32,30 @@ IMAGE_EXTENSIONS = [
 image_paths = []
 
 for ext in IMAGE_EXTENSIONS:
+
     image_paths.extend(
-        Path(INPUT_FOLDER).glob(f"*{ext}")
+        Path(INPUT_FOLDER).glob(
+            f"*{ext}"
+        )
     )
 
-image_paths = sorted(image_paths)
+# only RGB images
+image_paths = [
+    p for p in image_paths
+    if "_RGB" in p.name
+]
 
-print(f"Found {len(image_paths)} images")
+image_paths = sorted(
+    image_paths
+)
 
+print(
+    f"Found "
+    f"{len(image_paths)} "
+    f"RGB images"
+)
+
+#prompt
 name_list = [
     'Impervious surfaces',
     'Building',
@@ -69,6 +88,8 @@ model = SegEarthOV3Segmentation(
 # loop images
 for idx, img_path in enumerate(image_paths, 1):
 
+    start_time = time.time()
+   
     print("=" * 50)
     print(
         f"[{idx}/{len(image_paths)}] "
@@ -134,8 +155,36 @@ for idx, img_path in enumerate(image_paths, 1):
 
     plt.close()
 
+    elapsed = (
+    time.time()
+    - start_time
+)
+
+    # GPU usage
+    gpu_info = subprocess.check_output(
+        [
+            "nvidia-smi",
+            "--query-gpu="
+            "utilization.gpu,"
+            "memory.used,"
+            "memory.total",
+            "--format=csv,noheader,nounits"
+        ]
+    ).decode().strip()
+
     print(
-        f"Saved: {output_path}"
+        f"Saved: "
+        f"{output_path}"
+    )
+
+    print(
+        f"Time: "
+        f"{elapsed:.1f}s"
+    )
+
+    print(
+        f"GPU stats: "
+        f"{gpu_info}"
     )
 
 print("DONE")
