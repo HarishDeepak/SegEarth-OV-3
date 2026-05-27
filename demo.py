@@ -1,18 +1,50 @@
 from PIL import Image
+from pathlib import Path
 
 import os
+
 # force non-notebook backend
 os.environ["MPLBACKEND"] = "Agg"
 
 import matplotlib.pyplot as plt
 from torchvision import transforms
 from mmseg.structures import SegDataSample
+
 from segearthov3_segmentor import SegEarthOV3Segmentation
 from config_local import *
 
-img_path = IMAGE_PATH
+# create output folder
+os.makedirs("output", exist_ok=True)
 
-name_list = ['Impervious surfaces', 'Building', 'Low vegetation', 'Tree', 'Car', 'Clutter/background']
+# image extensions
+IMAGE_EXTENSIONS = [
+    ".tif",
+    ".tiff",
+    ".png",
+    ".jpg",
+    ".jpeg"
+]
+
+# find images
+image_paths = []
+
+for ext in IMAGE_EXTENSIONS:
+    image_paths.extend(
+        Path(IMAGE_FOLDER).glob(f"*{ext}")
+    )
+
+image_paths = sorted(image_paths)
+
+print(f"Found {len(image_paths)} images")
+
+name_list = [
+    'Impervious surfaces',
+    'Building',
+    'Low vegetation',
+    'Tree',
+    'Car',
+    'Clutter/background'
+]
 
 with open('./configs/my_name.txt', 'w') as writers:
     for i in range(len(name_list)):
@@ -20,22 +52,10 @@ with open('./configs/my_name.txt', 'w') as writers:
             writers.write(name_list[i])
         else:
             writers.write(name_list[i] + '\n')
+
 writers.close()
 
-
-img = Image.open(img_path)
-img_tensor = transforms.Compose([
-    transforms.ToTensor(),
-])(img).unsqueeze(0).to('cuda') # This variable is only a placeholder; the actual data is read within the model. (To be optimized)
-
-data_sample = SegDataSample()
-img_meta = {
-    'img_path': img_path,
-    'ori_shape': img.size[::-1] # H, W
-}
-data_sample.set_metainfo(img_meta)
-
-
+# create model once
 model = SegEarthOV3Segmentation(
     type='SegEarthOV3Segmentation',
     model_type='SAM3',
@@ -46,14 +66,76 @@ model = SegEarthOV3Segmentation(
     slide_crop=512,
 )
 
-seg_pred = model.predict(img_tensor, data_samples=[data_sample])
-seg_pred = seg_pred[0].pred_sem_seg.data.cpu().numpy().squeeze(0)
+# loop images
+for idx, img_path in enumerate(image_paths, 1):
 
-fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-ax[0].imshow(img)
-ax[0].axis('off')
-ax[1].imshow(seg_pred, cmap='viridis')
-ax[1].axis('off')
-plt.tight_layout()
-# plt.show()
-plt.savefig('seg_pred.png', bbox_inches='tight')
+    print("=" * 50)
+    print(
+        f"[{idx}/{len(image_paths)}] "
+        f"{img_path.name}"
+    )
+
+    img = Image.open(img_path)
+
+    img_tensor = transforms.Compose([
+        transforms.ToTensor(),
+    ])(img).unsqueeze(0).to('cuda')
+
+    data_sample = SegDataSample()
+
+    img_meta = {
+        'img_path': str(img_path),
+        'ori_shape': img.size[::-1]
+    }
+
+    data_sample.set_metainfo(img_meta)
+
+    print("Running prediction...")
+
+    seg_pred = model.predict(
+        img_tensor,
+        data_samples=[data_sample]
+    )
+
+    seg_pred = (
+        seg_pred[0]
+        .pred_sem_seg
+        .data
+        .cpu()
+        .numpy()
+        .squeeze(0)
+    )
+
+    fig, ax = plt.subplots(
+        1, 2,
+        figsize=(12, 6)
+    )
+
+    ax[0].imshow(img)
+    ax[0].axis('off')
+
+    ax[1].imshow(
+        seg_pred,
+        cmap='viridis'
+    )
+    ax[1].axis('off')
+
+    plt.tight_layout()
+
+    output_path = (
+        f"output/"
+        f"{img_path.stem}_segmented.png"
+    )
+
+    plt.savefig(
+        output_path,
+        bbox_inches='tight'
+    )
+
+    plt.close()
+
+    print(
+        f"Saved: {output_path}"
+    )
+
+print("DONE")
