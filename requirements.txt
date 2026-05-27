@@ -9,3 +9,5 @@ timm
 tomli
 pycocotools
 psutil
+openpyxl
+scikit-image

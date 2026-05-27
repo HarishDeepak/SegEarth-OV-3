@@ -2,9 +2,6 @@ from PIL import Image
 from pathlib import Path
 
 import os
-
-# force non-notebook backend
-os.environ["MPLBACKEND"] = "Agg"
 import time
 import torch
 import subprocess
@@ -15,6 +12,10 @@ from mmseg.structures import SegDataSample
 
 from segearthov3_segmentor import SegEarthOV3Segmentation
 from config_local import *
+
+
+# force non-notebook backend
+os.environ["MPLBACKEND"] = "Agg"
 
 # create output folder
 os.makedirs("output", exist_ok=True)

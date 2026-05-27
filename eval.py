@@ -11,10 +11,13 @@ import custom_datasets
 import custom_transforms
 
 
+# force non-notebook backend
+os.environ["MPLBACKEND"] = "Agg"
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='CorrCLIP evaluation with MMSeg')
-        
+
     parser.add_argument(
         'config',
         nargs='?',

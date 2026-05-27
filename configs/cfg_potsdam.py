@@ -30,6 +30,10 @@ test_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
+
+        img_suffix='_RGB.tif',
+        seg_map_suffix='_label_noBoundary.tif',
+
         data_prefix=dict(
             img_path='img_dir/val',
             seg_map_path='ann_dir/val'),
