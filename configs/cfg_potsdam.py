@@ -39,5 +39,5 @@ test_dataloader = dict(
 
         data_prefix=dict(
             img_path='img_dir/val',
-            seg_map_path='ann_dir/val'),
+            seg_map_path='ann_dir_indexed/val'),
         pipeline=test_pipeline))
