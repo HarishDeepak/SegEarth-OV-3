@@ -14,7 +14,12 @@ import custom_transforms
 def parse_args():
     parser = argparse.ArgumentParser(
         description='CorrCLIP evaluation with MMSeg')
-    parser.add_argument('config', default='./configs/cfg_loveda.py')
+        
+    parser.add_argument(
+        'config',
+        nargs='?',
+        default='./configs/cfg_potsdam.py'
+    )
     parser.add_argument(
         '--show', action='store_true', help='show prediction results')
     parser.add_argument(

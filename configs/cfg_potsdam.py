@@ -10,7 +10,11 @@ model = dict(
 
 # dataset settings
 dataset_type = 'PotsdamDataset'
-data_root = 'data/Potsdam'
+# data_root = 'data/Potsdam'
+data_root = (
+    '/kaggle/working/'
+    'PotsdamEval'
+)
 
 test_pipeline = [
     dict(type='LoadImageFromFile'),
