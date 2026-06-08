@@ -7,7 +7,7 @@ model = dict(
     confidence_threshold=0.1,
     bg_idx=5,
 
-    slide_stride=341,
+    slide_stride=512,
     slide_crop=512,
 )
 
