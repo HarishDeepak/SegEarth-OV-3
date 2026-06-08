@@ -70,8 +70,11 @@ image_paths = sorted(
 # split workload across GPUs
 # --------------------------------------------------
 
-gpu_count = (
-    torch.cuda.device_count()
+gpu_count = int(
+    os.environ.get(
+        "TOTAL_GPUS",
+        1
+    )
 )
 
 gpu_id = int(
