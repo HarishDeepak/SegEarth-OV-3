@@ -16,9 +16,7 @@ import custom_transforms
 
 
 # safe backend
-os.environ[
-    "MPLBACKEND"
-] = "Agg"
+os.environ["MPLBACKEND"] = "Agg"
 
 
 def parse_args():
@@ -50,7 +48,7 @@ def parse_args():
     parser.add_argument(
         '--out',
         type=str,
-        help='save prediction output'
+        help='save output prediction'
     )
 
     parser.add_argument(
@@ -201,7 +199,7 @@ def main():
         args.launcher
     )
 
-    # output directory
+    # add output dir
     if (
         args.out
         is not None
@@ -234,94 +232,18 @@ def main():
         )[0]
     )
 
-    # -----------------------------------
-    # create runner
-    # -----------------------------------
+    print(
+        "Creating runner..."
+    )
 
     runner = (
         Runner
         .from_cfg(cfg)
     )
 
-    # -----------------------------------
-    # split dataset across GPUs
-    # -----------------------------------
-
-    gpu_count = int(
-        os.environ.get(
-            "TOTAL_GPUS",
-            1
-        )
-    )
-
-    gpu_id = int(
-        os.environ.get(
-            "LOCAL_GPU_ID",
-            0
-        )
-    )
-
-    dataset = (
-        runner
-        .test_dataloader
-        .dataset
-    )
-
-    # IMPORTANT FIX
-    dataset.full_init()
-
-    all_data = (
-        dataset.data_list
-    )
-
-    if gpu_count > 1:
-
-        chunk_size = (
-            len(all_data)
-            + gpu_count
-            - 1
-        ) // gpu_count
-
-        start = (
-            gpu_id
-            * chunk_size
-        )
-
-        end = min(
-            start
-            + chunk_size,
-            len(all_data)
-        )
-
-        dataset.data_list = (
-            all_data[
-                start:end
-            ]
-        )
-
     print(
-        f"GPU {gpu_id} "
-        f"evaluating "
-        f"{len(dataset.data_list)} "
-        f"images"
+        "Starting evaluation..."
     )
-
-    for item in (
-        dataset.data_list
-    ):
-
-        print(
-            " -",
-            osp.basename(
-                item[
-                    'img_path'
-                ]
-            )
-        )
-
-    # -----------------------------------
-    # evaluation
-    # -----------------------------------
 
     results = (
         runner.test()
@@ -333,34 +255,19 @@ def main():
         cfg.model.model_type,
 
         'Dataset':
-        cfg.dataset_type,
-
-        'GPU':
-        gpu_id
+        cfg.dataset_type
     })
 
-    # -----------------------------------
-    # save results
-    # -----------------------------------
-
-    result_file = (
-        f"results_gpu"
-        f"{gpu_id}.xlsx"
-    )
-
-    txt_file = osp.join(
-        cfg.work_dir,
-        f"results_gpu"
-        f"{gpu_id}.txt"
-    )
-
     append_experiment_result(
-        result_file,
+        'results.xlsx',
         [results]
     )
 
     with open(
-        txt_file,
+        os.path.join(
+            cfg.work_dir,
+            'results.txt'
+        ),
         'a'
     ) as f:
 
@@ -381,6 +288,10 @@ def main():
                 + str(v)
                 + '\n'
             )
+
+    print(
+        "Evaluation complete."
+    )
 
 
 if __name__ == '__main__':
