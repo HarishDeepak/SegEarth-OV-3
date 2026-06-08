@@ -2,10 +2,12 @@ import os
 import os.path as osp
 import argparse
 import openpyxl
-import torch
 
 from mmengine.runner import Runner
-from mmengine.config import Config, DictAction
+from mmengine.config import (
+    Config,
+    DictAction
+)
 
 import segearthov3_segmentor
 import segearthov3_change_detector
@@ -13,20 +15,24 @@ import custom_datasets
 import custom_transforms
 
 
-# force non-notebook backend
-os.environ["MPLBACKEND"] = "Agg"
+# safe backend
+os.environ[
+    "MPLBACKEND"
+] = "Agg"
 
 
 def parse_args():
 
     parser = argparse.ArgumentParser(
-        description='CorrCLIP evaluation with MMSeg'
+        description=
+        'CorrCLIP evaluation with MMSeg'
     )
 
     parser.add_argument(
         'config',
         nargs='?',
-        default='./configs/cfg_potsdam.py'
+        default=
+        './configs/cfg_potsdam.py'
     )
 
     parser.add_argument(
@@ -44,7 +50,7 @@ def parse_args():
     parser.add_argument(
         '--out',
         type=str,
-        help='directory to save prediction output'
+        help='save prediction output'
     )
 
     parser.add_argument(
@@ -73,7 +79,11 @@ def parse_args():
 
     args = parser.parse_args()
 
-    if 'LOCAL_RANK' not in os.environ:
+    if (
+        'LOCAL_RANK'
+        not in os.environ
+    ):
+
         os.environ[
             'LOCAL_RANK'
         ] = str(
@@ -106,7 +116,11 @@ def append_experiment_result(
 
     sheet = workbook.active
 
-    if sheet['A1'].value is None:
+    if (
+        sheet['A1']
+        .value
+        is None
+    ):
 
         sheet['A1'] = 'Model'
         sheet['B1'] = 'Dataset'
@@ -126,31 +140,41 @@ def append_experiment_result(
         sheet.cell(
             row=last_row + index,
             column=1,
-            value=result['Model']
+            value=result[
+                'Model'
+            ]
         )
 
         sheet.cell(
             row=last_row + index,
             column=2,
-            value=result['Dataset']
+            value=result[
+                'Dataset'
+            ]
         )
 
         sheet.cell(
             row=last_row + index,
             column=3,
-            value=result['aAcc']
+            value=result[
+                'aAcc'
+            ]
         )
 
         sheet.cell(
             row=last_row + index,
             column=4,
-            value=result['mIoU']
+            value=result[
+                'mIoU'
+            ]
         )
 
         sheet.cell(
             row=last_row + index,
             column=5,
-            value=result['mAcc']
+            value=result[
+                'mAcc'
+            ]
         )
 
     workbook.save(
@@ -166,8 +190,11 @@ def main():
         os.getcwd()
     )
 
-    cfg = Config.fromfile(
-        args.config
+    cfg = (
+        Config
+        .fromfile(
+            args.config
+        )
     )
 
     cfg.launcher = (
@@ -175,7 +202,10 @@ def main():
     )
 
     # output directory
-    if args.out is not None:
+    if (
+        args.out
+        is not None
+    ):
 
         cfg.test_evaluator[
             'output_dir'
@@ -186,7 +216,10 @@ def main():
         ] = True
 
     # cfg override
-    if args.cfg_options is not None:
+    if (
+        args.cfg_options
+        is not None
+    ):
 
         cfg.merge_from_dict(
             args.cfg_options
@@ -205,8 +238,9 @@ def main():
     # create runner
     # -----------------------------------
 
-    runner = Runner.from_cfg(
-        cfg
+    runner = (
+        Runner
+        .from_cfg(cfg)
     )
 
     # -----------------------------------
@@ -214,11 +248,11 @@ def main():
     # -----------------------------------
 
     gpu_count = int(
-    os.environ.get(
-        "TOTAL_GPUS",
-        1
+        os.environ.get(
+            "TOTAL_GPUS",
+            1
+        )
     )
-)
 
     gpu_id = int(
         os.environ.get(
@@ -232,6 +266,9 @@ def main():
         .test_dataloader
         .dataset
     )
+
+    # IMPORTANT FIX
+    dataset.full_init()
 
     all_data = (
         dataset.data_list
@@ -276,7 +313,9 @@ def main():
         print(
             " -",
             osp.basename(
-                item['img_path']
+                item[
+                    'img_path'
+                ]
             )
         )
 
@@ -284,7 +323,9 @@ def main():
     # evaluation
     # -----------------------------------
 
-    results = runner.test()
+    results = (
+        runner.test()
+    )
 
     results.update({
 
@@ -299,7 +340,7 @@ def main():
     })
 
     # -----------------------------------
-    # save GPU-specific results
+    # save results
     # -----------------------------------
 
     result_file = (
@@ -307,12 +348,10 @@ def main():
         f"{gpu_id}.xlsx"
     )
 
-    txt_file = (
-        osp.join(
-            cfg.work_dir,
-            f"results_gpu"
-            f"{gpu_id}.txt"
-        )
+    txt_file = osp.join(
+        cfg.work_dir,
+        f"results_gpu"
+        f"{gpu_id}.txt"
     )
 
     append_experiment_result(
