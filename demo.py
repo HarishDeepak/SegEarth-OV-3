@@ -123,12 +123,12 @@ for p in image_paths:
 # --------------------------------------------------
 
 name_list = [
-    'road, pavement, impervious surface',
-    'building, rooftop, house',
-    'grass, shrub, low vegetation',
-    'tree, forest, canopy',
-    'car, vehicle',
-    'clutter, background'
+    'Impervious surfaces',
+    'Building',
+    'Low vegetation',
+    'Tree',
+    'Car',
+    'Clutter/background'
 ]
 
 with open(
@@ -181,7 +181,7 @@ model = (
         './configs/my_name.txt',
         prob_thd=0.1,
         confidence_threshold=0.1,
-        slide_stride=512,
+        slide_stride=341,
         slide_crop=512,
     )
 )

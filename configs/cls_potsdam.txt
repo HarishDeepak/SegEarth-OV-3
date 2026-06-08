@@ -1,6 +1,6 @@
-road, pavement, impervious surface
-building, rooftop, house
-grass, shrub, low vegetation
-tree, forest, canopy
-car, vehicle
-clutter, background
+Impervious surfaces
+Building
+Low vegetation
+Tree
+Car
+Clutter/background
