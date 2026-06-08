@@ -4,7 +4,7 @@ _base_ = './base_config.py'
 model = dict(
     classname_path='./configs/cls_potsdam.txt',
     prob_thd=0.1,
-    confidence_threshold=0.2,
+    confidence_threshold=0.1,
     bg_idx=5,
 
     slide_stride=512,
