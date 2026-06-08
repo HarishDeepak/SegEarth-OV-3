@@ -123,17 +123,12 @@ for p in image_paths:
 # --------------------------------------------------
 
 name_list = [
-    'road, sidewalk, pavement, parking lot, asphalt, concrete, impervious surface',
-
-    'building, rooftop, house, residential building, commercial building',
-
-    'grass, lawn, shrub, bush, low vegetation',
-
-    'tree, forest, tall vegetation, canopy',
-
-    'car, automobile, vehicle',
-
-    'clutter, background, unknown object, miscellaneous'
+    'road, pavement, impervious surface',
+    'building, rooftop, house',
+    'grass, shrub, low vegetation',
+    'tree, forest, canopy',
+    'car, vehicle',
+    'clutter, background'
 ]
 
 with open(
