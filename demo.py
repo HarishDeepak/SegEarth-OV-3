@@ -180,6 +180,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
+        bg_idx=5,
         confidence_threshold=0.1,
         slide_stride=448,
         slide_crop=512,
