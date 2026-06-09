@@ -4,10 +4,10 @@ _base_ = './base_config.py'
 model = dict(
     classname_path='./configs/cls_potsdam.txt',
     prob_thd=0.1,
-    confidence_threshold=0.1,
+    confidence_threshold=0.2,
     bg_idx=5,
 
-    slide_stride=448,
+    slide_stride=512,
     slide_crop=512,
 )
 
@@ -28,7 +28,7 @@ test_pipeline = [
 test_dataloader = dict(
     batch_size=1,
     num_workers=4,
-    persistent_workers=True,
+    persistent_workers=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
         type=dataset_type,

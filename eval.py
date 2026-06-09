@@ -15,10 +15,6 @@ import custom_datasets
 import custom_transforms
 
 
-# safe backend
-os.environ["MPLBACKEND"] = "Agg"
-
-
 def parse_args():
 
     parser = argparse.ArgumentParser(
@@ -48,13 +44,15 @@ def parse_args():
     parser.add_argument(
         '--out',
         type=str,
-        help='save output prediction'
+        help='directory to save prediction output'
     )
 
     parser.add_argument(
         '--cfg-options',
         nargs='+',
-        action=DictAction
+        action=DictAction,
+        help=
+        'override settings in config'
     )
 
     parser.add_argument(
@@ -65,7 +63,8 @@ def parse_args():
             'slurm',
             'mpi'
         ],
-        default='none'
+        default='none',
+        help='job launcher'
     )
 
     parser.add_argument(
@@ -180,6 +179,55 @@ def append_experiment_result(
     )
 
 
+def trigger_visualization_hook(
+    cfg,
+    args
+):
+
+    default_hooks = (
+        cfg.default_hooks
+    )
+
+    if (
+        'visualization'
+        in default_hooks
+    ):
+
+        visualization_hook = (
+            default_hooks[
+                'visualization'
+            ]
+        )
+
+        visualization_hook[
+            'draw'
+        ] = True
+
+        if args.show:
+
+            visualization_hook[
+                'show'
+            ] = True
+
+        if args.show_dir:
+
+            visualizer = (
+                cfg.visualizer
+            )
+
+            visualizer[
+                'save_dir'
+            ] = args.show_dir
+
+    else:
+
+        raise RuntimeError(
+            'VisualizationHook missing.'
+        )
+
+    return cfg
+
+
 def main():
 
     args = parse_args()
@@ -189,8 +237,7 @@ def main():
     )
 
     cfg = (
-        Config
-        .fromfile(
+        Config.fromfile(
             args.config
         )
     )
@@ -199,7 +246,7 @@ def main():
         args.launcher
     )
 
-    # add output dir
+    # output dir
     if (
         args.out
         is not None
@@ -213,7 +260,7 @@ def main():
             'keep_results'
         ] = True
 
-    # cfg override
+    # override config
     if (
         args.cfg_options
         is not None
@@ -232,17 +279,15 @@ def main():
         )[0]
     )
 
-    print(
-        "Creating runner..."
-    )
+    # keep disabled
+    # trigger_visualization_hook(
+    #     cfg,
+    #     args
+    # )
 
     runner = (
         Runner
         .from_cfg(cfg)
-    )
-
-    print(
-        "Starting evaluation..."
     )
 
     results = (
@@ -258,40 +303,44 @@ def main():
         cfg.dataset_type
     })
 
-    append_experiment_result(
-        'results.xlsx',
-        [results]
-    )
+    if (
+        runner.rank == 0
+    ):
 
-    with open(
-        os.path.join(
-            cfg.work_dir,
-            'results.txt'
-        ),
-        'a'
-    ) as f:
-
-        f.write(
-            osp.basename(
-                args.config
-            ).split('.')[0]
-            + '\n'
+        append_experiment_result(
+            'results.xlsx',
+            [results]
         )
 
-        for k, v in (
-            results.items()
-        ):
+    if (
+        runner.rank == 0
+    ):
+
+        with open(
+            os.path.join(
+                cfg.work_dir,
+                'results.txt'
+            ),
+            'a'
+        ) as f:
 
             f.write(
-                k
-                + ': '
-                + str(v)
+                osp.basename(
+                    args.config
+                ).split('.')[0]
                 + '\n'
             )
 
-    print(
-        "Evaluation complete."
-    )
+            for k, v in (
+                results.items()
+            ):
+
+                f.write(
+                    k
+                    + ': '
+                    + str(v)
+                    + '\n'
+                )
 
 
 if __name__ == '__main__':
