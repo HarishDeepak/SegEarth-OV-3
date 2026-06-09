@@ -1,10 +1,4 @@
 import os
-import matplotlib
-matplotlib.use("Agg")
-
-os.environ["MPLBACKEND"] = "Agg"
-
-
 import os.path as osp
 import argparse
 import openpyxl
