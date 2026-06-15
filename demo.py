@@ -67,6 +67,32 @@ image_paths = sorted(
 )
 
 # --------------------------------------------------
+# single image mode
+# --------------------------------------------------
+
+if RUN_SINGLE_IMAGE:
+
+    image_paths = [
+        p for p in image_paths
+        if p.name == TARGET_IMAGE
+    ]
+
+    if len(image_paths) == 0:
+
+        available_images = [
+            p.name
+            for p in image_paths
+        ]
+
+        raise FileNotFoundError(
+            f"TARGET_IMAGE "
+            f"not found:\n"
+            f"{TARGET_IMAGE}\n\n"
+            f"Available files:\n"
+            f"{available_images}"
+        )
+
+# --------------------------------------------------
 # split workload across GPUs
 # --------------------------------------------------
 
