@@ -21,7 +21,7 @@ RUN_SINGLE_IMAGE = True
 # RUN_SINGLE_IMAGE = True
 
 TARGET_IMAGE = (
-    "top_potsdam_5_15_RGB.tif"
+    "top_potsdam_5_14_RGB.tif"
 )
 
 # --------------------------------------------------
@@ -38,7 +38,10 @@ if KAGGLE:
 
     INPUT_FOLDER = (
         "/kaggle/input/datasets/"
-        "dummyirl/6isprs/"
+        "dummyirl/"
+        "potsdam-rescaled/"
+        "potsdam_rescaled/"
+        "10cm_small/"
     )
 
 else:
