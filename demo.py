@@ -312,12 +312,14 @@ for idx, img_path in enumerate(
     # load GT
     # ---------------------------
 
+    base_name = (
+        img_path.name
+        .split("_RGB")[0]
+    )
+
     gt_path = (
         img_path.parent /
-        img_path.name.replace(
-            "_RGB.tif",
-            "_label_noBoundary.tif"
-        )
+        f"{base_name}_label_noBoundary.tif"
     )
 
     gt_img = Image.open(
@@ -338,7 +340,7 @@ for idx, img_path in enumerate(
     ax[0].imshow(img)
     ax[0].axis('off')
     ax[0].set_title(
-        "RGB Image"
+        "RGB 10cm"
     )
 
     # prediction

@@ -39,9 +39,8 @@ if KAGGLE:
     INPUT_FOLDER = (
         "/kaggle/input/datasets/"
         "dummyirl/"
-        "potsdam-rescaled/"
-        "potsdam_rescaled/"
-        "10cm_small/"
+        "6isprs/"
+        "6ISPRS/"
     )
 
 else:
