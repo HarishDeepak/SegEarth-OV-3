@@ -1,4 +1,3 @@
-```python
 from PIL import Image
 from pathlib import Path
 
@@ -185,7 +184,8 @@ name_list = [
     'greenhouse',
     'bare soil',
     'water',
-    'car'
+    'car',
+    'clutter'
 ]
 
 with open(
@@ -242,6 +242,7 @@ COLOR_MAP = np.array([
     [210, 180, 140],  # 8 bare soil
     [0, 150, 255],    # 9 water
     [255, 255, 0],    # 10 car
+    [255, 0, 0],      # 11 clutter (Potsdam red)
 ], dtype=np.uint8)
 
 # --------------------------------------------------
@@ -255,7 +256,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=5,
+        bg_idx=11,
         confidence_threshold=0.1,
         slide_stride=448,
         slide_crop=512,
@@ -525,4 +526,3 @@ for idx, img_path in enumerate(
     )
 
 print("DONE")
-```
