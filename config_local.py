@@ -25,7 +25,7 @@ RUN_SINGLE_IMAGE = True
 #)
 
 TARGET_IMAGE = (
-    "dop20_32_473_5524_1_he.jpg"
+    "dop20_32_476_5524_1_he.jpg"
     
 )
 
