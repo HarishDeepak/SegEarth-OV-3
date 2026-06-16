@@ -1,6 +1,6 @@
 from PIL import Image
 from pathlib import Path
-from matplotlib.patches import Patch
+
 import os
 import time
 import torch
@@ -13,6 +13,7 @@ os.environ["MPLBACKEND"] = "Agg"
 import matplotlib.pyplot as plt
 from torchvision import transforms
 from mmseg.structures import SegDataSample
+from matplotlib.patches import Patch
 
 from segearthov3_segmentor import (
     SegEarthOV3Segmentation
