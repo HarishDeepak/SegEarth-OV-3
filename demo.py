@@ -58,10 +58,10 @@ for ext in IMAGE_EXTENSIONS:
     )
 
 # only RGB images
-image_paths = [
-    p for p in image_paths
-    if "_RGB" in p.name
-]
+#image_paths = [
+#    p for p in image_paths
+#    if "_RGB" in p.name
+#]
 
 image_paths = sorted(
     image_paths
