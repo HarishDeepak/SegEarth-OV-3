@@ -20,8 +20,12 @@ RUN_SINGLE_IMAGE = True
 # used only if
 # RUN_SINGLE_IMAGE = True
 
+#TARGET_IMAGE = (
+#    "top_potsdam_5_14_RGB_20cm_upsampled.tif"
+#)
+
 TARGET_IMAGE = (
-    "top_potsdam_5_14_RGB_20cm_upsampled.tif"
+    "dop20_32_469_5521_1_he.jpg"
 )
 
 # --------------------------------------------------
@@ -36,11 +40,17 @@ if KAGGLE:
         "sam3.pt"
     )
 
+    #INPUT_FOLDER = (
+    #    "/kaggle/input/datasets/"
+    #    "dummyirl/"
+    #    "6isprs/"
+    #    "6ISPRS/"
+    #)
+
     INPUT_FOLDER = (
         "/kaggle/input/datasets/"
         "dummyirl/"
-        "6isprs/"
-        "6ISPRS/"
+        "darmstadt-dop20/"
     )
 
 else:

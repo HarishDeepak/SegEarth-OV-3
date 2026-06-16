@@ -1,6 +1,6 @@
 from PIL import Image
 from pathlib import Path
-
+from matplotlib.patches import Patch
 import os
 import time
 import torch
@@ -148,13 +148,27 @@ for p in image_paths:
 # prompts
 # --------------------------------------------------
 
+#name_list = [
+#    'road',
+#    'building',
+#    'grass',
+#    'tree',
+#    'car',
+#    'clutter'
+#]
+
 name_list = [
-    'road',
     'building',
-    'grass',
+    'road',
+    'farm road',
+    'rail track',
     'tree',
-    'car',
-    'clutter'
+    'grassland',
+    'crop field',
+    'greenhouse',
+    'bare soil',
+    'water',
+    'car'
 ]
 
 with open(
@@ -193,6 +207,20 @@ COLOR_MAP = np.array([
     [0, 255, 0],      # 3 tree
     [255, 255, 0],    # 4 car
     [255, 0, 0],      # 5 clutter
+], dtype=np.uint8)
+
+COLOR_MAP = np.array([
+    [0, 0, 255],      # 0 building (Potsdam blue)
+    [120, 120, 120],  # 1 road (gray)
+    [170, 140, 90],   # 2 farm road (road family)
+    [80, 80, 80],     # 3 rail track (dark road family)
+    [0, 180, 0],      # 4 tree (dark green)
+    [120, 220, 120],  # 5 grassland (light green)
+    [0, 255, 255],    # 6 crop field (Potsdam vegetation cyan)
+    [230, 230, 230],  # 7 greenhouse (white/light gray)
+    [210, 180, 140],  # 8 bare soil (brown/tan)
+    [0, 150, 255],    # 9 water (blue-cyan)
+    [255, 255, 0],    # 10 car (Potsdam yellow)
 ], dtype=np.uint8)
 
 # --------------------------------------------------
@@ -304,9 +332,10 @@ for idx, img_path in enumerate(
         np.clip(
             seg_pred,
             0,
-            5
+            10
         )
     ]
+    
 
     # ---------------------------
     # load GT
@@ -332,18 +361,26 @@ for idx, img_path in enumerate(
 
     fig, ax = plt.subplots(
         1,
-        3,
-        figsize=(18, 6)
+        2,
+        figsize=(18, 8)
     )
 
+    # ---------------------------
     # RGB
+    # ---------------------------
+
     ax[0].imshow(img)
+
     ax[0].axis('off')
+
     ax[0].set_title(
-        "RGB 10cm"
+        "RGB Image"
     )
 
+    # ---------------------------
     # prediction
+    # ---------------------------
+
     ax[1].imshow(
         seg_rgb
     )
@@ -354,18 +391,36 @@ for idx, img_path in enumerate(
         "Prediction"
     )
 
-    # GT
-    ax[2].imshow(
-        gt_img
+    # ---------------------------
+    # legend
+    # ---------------------------
+
+    legend_elements = []
+
+    for class_name, color in zip(
+        name_list,
+        COLOR_MAP
+    ):
+
+        legend_elements.append(
+            Patch(
+                facecolor=color / 255.0,
+                edgecolor='black',
+                label=class_name
+            )
+        )
+
+    fig.legend(
+        handles=legend_elements,
+        loc='lower center',
+        ncol=4,
+        bbox_to_anchor=(0.5, -0.02),
+        frameon=True
     )
 
-    ax[2].axis('off')
-
-    ax[2].set_title(
-        "Ground Truth"
+    plt.tight_layout(
+        rect=[0, 0.08, 1, 1]
     )
-
-    plt.tight_layout()
 
     # ---------------------------
     # save image
