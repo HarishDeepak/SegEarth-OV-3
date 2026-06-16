@@ -21,7 +21,7 @@ RUN_SINGLE_IMAGE = True
 # RUN_SINGLE_IMAGE = True
 
 TARGET_IMAGE = (
-    "top_potsdam_5_14_RGB_10cm_upsampled.tif"
+    "top_potsdam_5_14_RGB_20cm_upsampled.tif"
 )
 
 # --------------------------------------------------
