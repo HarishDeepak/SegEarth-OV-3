@@ -1,3 +1,4 @@
+```python
 from PIL import Image
 from pathlib import Path
 
@@ -11,9 +12,10 @@ import numpy as np
 os.environ["MPLBACKEND"] = "Agg"
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+
 from torchvision import transforms
 from mmseg.structures import SegDataSample
-from matplotlib.patches import Patch
 
 from segearthov3_segmentor import (
     SegEarthOV3Segmentation
@@ -57,11 +59,17 @@ for ext in IMAGE_EXTENSIONS:
         )
     )
 
-# only RGB images
-#image_paths = [
-#    p for p in image_paths
-#    if "_RGB" in p.name
-#]
+# --------------------------------------------------
+# Potsdam filtering
+# --------------------------------------------------
+
+# keep only RGB tiles for ISPRS
+if "6ISPRS" in INPUT_FOLDER:
+
+    image_paths = [
+        p for p in image_paths
+        if "_RGB" in p.name
+    ]
 
 image_paths = sorted(
     image_paths
@@ -73,17 +81,17 @@ image_paths = sorted(
 
 if RUN_SINGLE_IMAGE:
 
+    available_images = [
+        p.name
+        for p in image_paths
+    ]
+
     image_paths = [
         p for p in image_paths
         if p.name == TARGET_IMAGE
     ]
 
     if len(image_paths) == 0:
-
-        available_images = [
-            p.name
-            for p in image_paths
-        ]
 
         raise FileNotFoundError(
             f"TARGET_IMAGE "
@@ -149,14 +157,22 @@ for p in image_paths:
 # prompts
 # --------------------------------------------------
 
-#name_list = [
-#    'road',
-#    'building',
-#    'grass',
-#    'tree',
-#    'car',
-#    'clutter'
-#]
+# --------------------------------------------------
+# Potsdam prompts
+# --------------------------------------------------
+
+# name_list = [
+#     'road',
+#     'building',
+#     'grass',
+#     'tree',
+#     'car',
+#     'clutter'
+# ]
+
+# --------------------------------------------------
+# Darmstadt DOP20 prompts
+# --------------------------------------------------
 
 name_list = [
     'building',
@@ -198,30 +214,34 @@ with open(
             )
 
 # --------------------------------------------------
-# official Potsdam color map
+# Potsdam color map
+# --------------------------------------------------
+
+# COLOR_MAP = np.array([
+#     [255, 255, 255],  # 0 impervious
+#     [0, 0, 255],      # 1 building
+#     [0, 255, 255],    # 2 low vegetation
+#     [0, 255, 0],      # 3 tree
+#     [255, 255, 0],    # 4 car
+#     [255, 0, 0],      # 5 clutter
+# ], dtype=np.uint8)
+
+# --------------------------------------------------
+# Darmstadt color map
 # --------------------------------------------------
 
 COLOR_MAP = np.array([
-    [255, 255, 255],  # 0 impervious
-    [0, 0, 255],      # 1 building
-    [0, 255, 255],    # 2 low vegetation
-    [0, 255, 0],      # 3 tree
-    [255, 255, 0],    # 4 car
-    [255, 0, 0],      # 5 clutter
-], dtype=np.uint8)
-
-COLOR_MAP = np.array([
-    [0, 0, 255],      # 0 building (Potsdam blue)
-    [120, 120, 120],  # 1 road (gray)
-    [170, 140, 90],   # 2 farm road (road family)
-    [80, 80, 80],     # 3 rail track (dark road family)
-    [0, 180, 0],      # 4 tree (dark green)
-    [120, 220, 120],  # 5 grassland (light green)
-    [0, 255, 255],    # 6 crop field (Potsdam vegetation cyan)
-    [230, 230, 230],  # 7 greenhouse (white/light gray)
-    [210, 180, 140],  # 8 bare soil (brown/tan)
-    [0, 150, 255],    # 9 water (blue-cyan)
-    [255, 255, 0],    # 10 car (Potsdam yellow)
+    [0, 0, 255],      # 0 building
+    [120, 120, 120],  # 1 road
+    [170, 140, 90],   # 2 farm road
+    [80, 80, 80],     # 3 rail track
+    [0, 180, 0],      # 4 tree
+    [120, 220, 120],  # 5 grassland
+    [0, 255, 255],    # 6 crop field
+    [230, 230, 230],  # 7 greenhouse
+    [210, 180, 140],  # 8 bare soil
+    [0, 150, 255],    # 9 water
+    [255, 255, 0],    # 10 car
 ], dtype=np.uint8)
 
 # --------------------------------------------------
@@ -269,7 +289,7 @@ for idx, img_path in enumerate(
 
     img = Image.open(
         img_path
-    )
+    ).convert("RGB")
 
     img_tensor = (
         transforms.Compose([
@@ -326,71 +346,90 @@ for idx, img_path in enumerate(
     )
 
     # ---------------------------
-    # convert to Potsdam colors
+    # convert colors
     # ---------------------------
 
     seg_rgb = COLOR_MAP[
         np.clip(
             seg_pred,
             0,
-            10
+            len(COLOR_MAP) - 1
         )
     ]
-    
 
     # ---------------------------
-    # load GT
+    # load GT (optional)
     # ---------------------------
 
-    base_name = (
-        img_path.name
-        .split("_RGB")[0]
-    )
+    gt_img = None
 
-    gt_path = (
-        img_path.parent /
-        f"{base_name}_label_noBoundary.tif"
-    )
+    # only for Potsdam
+    if "_RGB" in img_path.name:
 
-    gt_img = Image.open(
-        gt_path
-    )
+        base_name = (
+            img_path.name
+            .split("_RGB")[0]
+        )
+
+        gt_path = (
+            img_path.parent /
+            f"{base_name}_label_noBoundary.tif"
+        )
+
+        if gt_path.exists():
+
+            gt_img = Image.open(
+                gt_path
+            )
 
     # ---------------------------
     # visualize
     # ---------------------------
 
-    fig, ax = plt.subplots(
-        1,
-        2,
-        figsize=(18, 8)
-    )
+    if gt_img is not None:
 
-    # ---------------------------
+        fig, ax = plt.subplots(
+            1,
+            3,
+            figsize=(24, 8)
+        )
+
+    else:
+
+        fig, ax = plt.subplots(
+            1,
+            2,
+            figsize=(18, 8)
+        )
+
     # RGB
-    # ---------------------------
-
     ax[0].imshow(img)
-
     ax[0].axis('off')
-
     ax[0].set_title(
         "RGB Image"
     )
 
-    # ---------------------------
     # prediction
-    # ---------------------------
-
     ax[1].imshow(
         seg_rgb
     )
-
     ax[1].axis('off')
-
     ax[1].set_title(
         "Prediction"
     )
+
+    # GT (optional)
+    if gt_img is not None:
+
+        ax[2].imshow(
+            gt_img
+        )
+
+        ax[2].axis('off')
+
+        ax[2].set_title(
+            "Ground Truth"
+        )
 
     # ---------------------------
     # legend
@@ -486,3 +525,4 @@ for idx, img_path in enumerate(
     )
 
 print("DONE")
+```
