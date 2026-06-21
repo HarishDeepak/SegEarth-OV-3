@@ -257,8 +257,8 @@ model = (
         prob_thd=0.1,
         bg_idx=11,
         confidence_threshold=0.1,
-        slide_stride=448,
-        slide_crop=512,
+        slide_stride=768,
+        slide_crop=1024,
     )
 )
 
