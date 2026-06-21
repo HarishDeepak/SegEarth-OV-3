@@ -156,10 +156,6 @@ for p in image_paths:
 # prompts
 # --------------------------------------------------
 
-# --------------------------------------------------
-# Potsdam prompts
-# --------------------------------------------------
-
 # name_list = [
 #     'road',
 #     'building',
@@ -169,23 +165,20 @@ for p in image_paths:
 #     'clutter'
 # ]
 
-# --------------------------------------------------
-# Darmstadt DOP20 prompts
-# --------------------------------------------------
-
 name_list = [
-    'building',
-    'road',
-    'farm road',
-    'rail track',
-    'tree',
+    'airport runway',
+    'airport taxiway',
+    'airport apron',
+    'airplane, aircraft, passenger jet',
+    'terminal building',
+    'hangar, aircraft hangar',
+    'road, street',
+    'parking lot',
     'grassland',
-    'crop field',
-    'greenhouse',
-    'bare soil',
-    'water',
-    'car',
-    'clutter'
+    'solar panel',
+    'vehicle, car, truck',
+    'runway marking, airport marking, painted sign',
+    'clutter, unknown'
 ]
 
 with open(
@@ -231,18 +224,31 @@ with open(
 # --------------------------------------------------
 
 COLOR_MAP = np.array([
-    [0, 0, 255],      # 0 building
-    [120, 120, 120],  # 1 road
-    [170, 140, 90],   # 2 farm road
-    [80, 80, 80],     # 3 rail track
-    [0, 180, 0],      # 4 tree
-    [120, 220, 120],  # 5 grassland
-    [0, 255, 255],    # 6 crop field
-    [230, 230, 230],  # 7 greenhouse
-    [210, 180, 140],  # 8 bare soil
-    [0, 150, 255],    # 9 water
-    [255, 255, 0],    # 10 car
-    [255, 0, 0],      # 11 clutter (Potsdam red)
+    [80, 80, 80],      # 0 runway (dark gray)
+
+    [140, 140, 140],   # 1 taxiway (medium gray)
+
+    [200, 200, 200],   # 2 apron (light gray)
+
+    [255, 255, 0],     # 3 airplane (yellow)
+
+    [0, 0, 255],       # 4 terminal building (blue)
+
+    [120, 180, 255],   # 5 hangar (light blue)
+
+    [100, 100, 100],   # 6 road (road family)
+
+    [170, 170, 170],   # 7 parking lot (light road family)
+
+    [0, 180, 0],       # 8 grassland (green)
+
+    [255, 140, 0],     # 9 solar panel (orange)
+
+    [255, 255, 150],   # 10 vehicle (light yellow)
+
+    [255, 0, 255],     # 11 runway marking (magenta)
+
+    [255, 0, 0],       # 12 clutter (red)
 ], dtype=np.uint8)
 
 # --------------------------------------------------
@@ -406,17 +412,20 @@ for idx, img_path in enumerate(
     # RGB
     ax[0].imshow(img)
     ax[0].axis('off')
-    ax[0].set_title(
-        "RGB Image"
+    ax[0].set_title("RGB Image")
+
+    # prediction overlay
+    ax[1].imshow(img)
+
+    ax[1].imshow(
+        seg_rgb,
+        alpha=0.45
     )
 
-    # prediction
-    ax[1].imshow(
-        seg_rgb
-    )
     ax[1].axis('off')
+
     ax[1].set_title(
-        "Prediction"
+        "Segmentation Overlay"
     )
 
     # GT (optional)
