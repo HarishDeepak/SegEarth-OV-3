@@ -174,6 +174,7 @@ name_list = [
     'car',
     'tree',
     'water',
+    'container',
     'clutter'
 ]
 
@@ -231,7 +232,9 @@ COLOR_MAP = np.array([
 
     [0, 255, 255],    # 7 water (cyan)
 
-    [255, 0, 0],      # 8 clutter (red)
+    [255, 140, 0],    # 8 container (orange)
+
+    [255, 0, 0],      # 9 clutter (red)
 
 ], dtype=np.uint8)
 
@@ -246,7 +249,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=8,
+        bg_idx=9,
         confidence_threshold=0.1,
         slide_stride=768,
         slide_crop=1024,
