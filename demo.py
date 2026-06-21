@@ -169,16 +169,16 @@ name_list = [
     'airport runway',
     'airport taxiway',
     'airport apron',
-    'airplane, aircraft, passenger jet',
+    'airplane',
     'terminal building',
-    'hangar, aircraft hangar',
-    'road, street',
+    'aircraft hangar',
+    'road',
     'parking lot',
     'grassland',
     'solar panel',
-    'vehicle, car, truck',
-    'runway marking, airport marking, painted sign',
-    'clutter, unknown'
+    'vehicle',
+    'painted sign',
+    'clutter'
 ]
 
 with open(
@@ -262,7 +262,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=11,
+        bg_idx=12,
         confidence_threshold=0.1,
         slide_stride=448,
         slide_crop=512,
