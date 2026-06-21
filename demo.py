@@ -166,14 +166,17 @@ for p in image_paths:
 # ]
 
 name_list = [
-    'airplane',
+    'football stadium',
+    'football field',
+    'tennis court',
+    'swimming pool',
     'building',
     'road',
-    'parking lot'
+    'parking lot',
     'grassland',
-    'solar panel',
     'vehicle',
-    'painted sign',
+    'tree',
+    'railway track',
     'clutter'
 ]
 
@@ -214,23 +217,30 @@ with open(
 
 
 COLOR_MAP = np.array([
-    [255, 255,   0],  # 0 airplane (yellow)
 
-    [  0,   0, 255],  # 1 building (blue)
+    [255, 140,   0],  # 0 football stadium (orange)
 
-    [100, 100, 100],  # 2 road (dark gray)
+    [255, 220,   0],  # 1 football field (yellow-green)
 
-    [180, 180, 180],  # 3 parking lot (light gray)
+    [255,   0, 255],  # 2 tennis court (magenta)
 
-    [  0, 180,   0],  # 4 grassland (green)
+    [  0, 255, 255],  # 3 swimming pool (cyan)
 
-    [255, 140,   0],  # 5 solar panel (orange)
+    [  0,   0, 255],  # 4 building (blue)
 
-    [255, 255, 150],  # 6 vehicle (light yellow)
+    [100, 100, 100],  # 5 road (dark gray)
 
-    [255,   0, 255],  # 7 painted sign (magenta)
+    [180, 180, 180],  # 6 parking lot (light gray)
 
-    [255,   0,   0],  # 8 clutter (red)
+    [120, 220, 120],  # 7 grassland (light green)
+
+    [255, 255,   0],  # 8 vehicle (yellow)
+
+    [  0, 180,   0],  # 9 tree (dark green)
+
+    [ 60,  60,  60],  # 10 railway track (almost black)
+
+    [255,   0,   0],  # 11 clutter (red)
 
 ], dtype=np.uint8)
 
@@ -245,7 +255,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=8,
+        bg_idx=11,
         confidence_threshold=0.1,
         slide_stride=448,
         slide_crop=512,
