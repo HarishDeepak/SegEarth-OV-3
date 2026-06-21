@@ -168,7 +168,7 @@ for p in image_paths:
 name_list = [
     'building',
     'road',
-    'football field',
+    'construction area',
     'parking lot',
     'grassland',
     'car',
