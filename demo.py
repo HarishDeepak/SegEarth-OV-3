@@ -170,7 +170,7 @@ name_list = [
     'road',
     'parking lot',
     'grassland',
-    'vehicle',
+    'car',
     'tree',
     'railway track',
     'clutter'
