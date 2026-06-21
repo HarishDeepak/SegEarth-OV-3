@@ -168,11 +168,12 @@ for p in image_paths:
 name_list = [
     'building',
     'road',
+    'football field',
     'parking lot',
     'grassland',
     'car',
     'tree',
-    'railway track',
+    'water',
     'clutter'
 ]
 
@@ -218,17 +219,19 @@ COLOR_MAP = np.array([
 
     [100, 100, 100],  # 1 road (dark gray)
 
-    [180, 180, 180],  # 2 parking lot (light gray)
+    [180, 255, 0],    # 2 football field (bright green)
 
-    [120, 220, 120],  # 3 grassland (light green)
+    [180, 180, 180],  # 3 parking lot (light gray)
 
-    [255, 255, 0],    # 4 vehicle (yellow)
+    [120, 220, 120],  # 4 grassland (light green)
 
-    [0, 180, 0],      # 5 tree (dark green)
+    [255, 255, 0],    # 5 car (yellow)
 
-    [50, 50, 50],     # 6 railway track (almost black)
+    [0, 180, 0],      # 6 tree (dark green)
 
-    [255, 0, 0],      # 7 clutter (red)
+    [0, 255, 255],    # 7 water (cyan)
+
+    [255, 0, 0],      # 8 clutter (red)
 
 ], dtype=np.uint8)
 
@@ -243,7 +246,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=7,
+        bg_idx=8,
         confidence_threshold=0.1,
         slide_stride=768,
         slide_crop=1024,
