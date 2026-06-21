@@ -166,14 +166,10 @@ for p in image_paths:
 # ]
 
 name_list = [
-    'airport runway',
-    'airport taxiway',
-    'airport apron',
     'airplane',
-    'terminal building',
-    'aircraft hangar',
+    'building',
     'road',
-    'parking lot',
+    'parking lot'
     'grassland',
     'solar panel',
     'vehicle',
@@ -206,9 +202,6 @@ with open(
                 + '\n'
             )
 
-# --------------------------------------------------
-# Potsdam color map
-# --------------------------------------------------
 
 # COLOR_MAP = np.array([
 #     [255, 255, 255],  # 0 impervious
@@ -219,36 +212,26 @@ with open(
 #     [255, 0, 0],      # 5 clutter
 # ], dtype=np.uint8)
 
-# --------------------------------------------------
-# Darmstadt color map
-# --------------------------------------------------
 
 COLOR_MAP = np.array([
-    [80, 80, 80],      # 0 runway (dark gray)
+    [255, 255,   0],  # 0 airplane (yellow)
 
-    [140, 140, 140],   # 1 taxiway (medium gray)
+    [  0,   0, 255],  # 1 building (blue)
 
-    [200, 200, 200],   # 2 apron (light gray)
+    [100, 100, 100],  # 2 road (dark gray)
 
-    [255, 255, 0],     # 3 airplane (yellow)
+    [180, 180, 180],  # 3 parking lot (light gray)
 
-    [0, 0, 255],       # 4 terminal building (blue)
+    [  0, 180,   0],  # 4 grassland (green)
 
-    [120, 180, 255],   # 5 hangar (light blue)
+    [255, 140,   0],  # 5 solar panel (orange)
 
-    [100, 100, 100],   # 6 road (road family)
+    [255, 255, 150],  # 6 vehicle (light yellow)
 
-    [170, 170, 170],   # 7 parking lot (light road family)
+    [255,   0, 255],  # 7 painted sign (magenta)
 
-    [0, 180, 0],       # 8 grassland (green)
+    [255,   0,   0],  # 8 clutter (red)
 
-    [255, 140, 0],     # 9 solar panel (orange)
-
-    [255, 255, 150],   # 10 vehicle (light yellow)
-
-    [255, 0, 255],     # 11 runway marking (magenta)
-
-    [255, 0, 0],       # 12 clutter (red)
 ], dtype=np.uint8)
 
 # --------------------------------------------------
@@ -262,7 +245,7 @@ model = (
         classname_path=
         './configs/my_name.txt',
         prob_thd=0.1,
-        bg_idx=12,
+        bg_idx=8,
         confidence_threshold=0.1,
         slide_stride=448,
         slide_crop=512,
