@@ -31,15 +31,12 @@ TARGET_IMAGE = (
 if KAGGLE:
 
     SAM3_CHECKPOINT = (
-        "/kaggle/input/datasets/"
-        "dummyirl/sam3-weights/"
+        "/kaggle/input/sam3-weights/"
         "sam3.pt"
     )
 
     INPUT_FOLDER = (
-        "/kaggle/input/datasets/"
-        "dummyirl/"
-        "frankfurt-dot20/"
+        "/kaggle/input/darmstadt-dop20/"
     )
 
 else:

@@ -97,10 +97,24 @@ class SegEarthOV3Segmentation(BaseSegmentor):
                 
         return seg_logits
 
+    @staticmethod
+    def _make_gaussian_kernel(h, w, device):
+        """2D Gaussian weight kernel: center pixels get full weight, edges near-zero."""
+        sigma_h, sigma_w = h / 4.0, w / 4.0
+        y = torch.arange(h, device=device).float() - (h - 1) / 2.0
+        x = torch.arange(w, device=device).float() - (w - 1) / 2.0
+        kernel = torch.exp(-y[:, None] ** 2 / (2 * sigma_h ** 2)) * \
+                 torch.exp(-x[None, :] ** 2 / (2 * sigma_w ** 2))
+        return kernel  # (h, w)
+
     def slide_inference(self, image, stride, crop_size):
-        """Inference by sliding-window with overlap using PIL cropping."""
+        """Inference by sliding-window with Gaussian-weighted overlap blending.
+
+        Center pixels of each crop contribute with full weight; edge pixels are
+        down-weighted exponentially, eliminating seam artifacts when patches overlap.
+        """
         w_img, h_img = image.size
-        
+
         if isinstance(stride, int):
             stride = (stride, stride)
         if isinstance(crop_size, int):
@@ -108,11 +122,12 @@ class SegEarthOV3Segmentation(BaseSegmentor):
 
         h_stride, w_stride = stride
         h_crop, w_crop = crop_size
-        
-        # Initialize accumulators
+
+        gaussian_kernel = self._make_gaussian_kernel(h_crop, w_crop, self.device)
+
         preds = torch.zeros((self.num_queries, h_img, w_img), device=self.device)
-        count_mat = torch.zeros((1, h_img, w_img), device=self.device)
-        
+        weight_mat = torch.zeros((h_img, w_img), device=self.device)
+
         h_grids = max(h_img - h_crop + h_stride - 1, 0) // h_stride + 1
         w_grids = max(w_img - w_crop + w_stride - 1, 0) // w_stride + 1
 
@@ -122,24 +137,24 @@ class SegEarthOV3Segmentation(BaseSegmentor):
                 x1 = w_idx * w_stride
                 y2 = min(y1 + h_crop, h_img)
                 x2 = min(x1 + w_crop, w_img)
-                
-                # Adjust start points to ensure crop size is valid at boundaries
+
+                # Adjust start to guarantee full crop size at image boundaries
                 y1 = max(y2 - h_crop, 0)
                 x1 = max(x2 - w_crop, 0)
-                
-                # Crop via PIL
-                crop_img = image.crop((x1, y1, x2, y2))
-                
-                # Inference on crop
-                crop_seg_logit = self._inference_single_view(crop_img)
-                
-                # Accumulate results
-                preds[:, y1:y2, x1:x2] += crop_seg_logit
-                count_mat[:, y1:y2, x1:x2] += 1
 
-        assert (count_mat == 0).sum() == 0, "Error: Sparse sliding window coverage."
-        
-        preds = preds / count_mat
+                crop_img = image.crop((x1, y1, x2, y2))
+                crop_seg_logit = self._inference_single_view(crop_img)
+
+                # Slice kernel for boundary crops smaller than nominal crop size
+                actual_h, actual_w = y2 - y1, x2 - x1
+                g = gaussian_kernel[:actual_h, :actual_w]
+
+                preds[:, y1:y2, x1:x2] += crop_seg_logit * g.unsqueeze(0)
+                weight_mat[y1:y2, x1:x2] += g
+
+        assert (weight_mat == 0).sum() == 0, "Error: Sparse sliding window coverage."
+
+        preds = preds / weight_mat.unsqueeze(0)
         return preds
 
     def predict(self, inputs, data_samples):
